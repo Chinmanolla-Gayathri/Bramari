@@ -9,14 +9,12 @@ const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
 // --- 1. MIDDLEWARE ---
-// Put CORS first to handle all connection requests immediately
 app.use(cors({
     origin: '*', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Body parser comes next
 app.use(express.json({ limit: '50mb' })); 
 
 // --- 2. CONNECT TO MONGODB ---
@@ -33,17 +31,19 @@ const productSchema = new mongoose.Schema({
   occasion: String,
   description: String,
   price: Number,
-  images: [String], // Array of Base64 strings
+  images: [String], 
   createdAt: { type: Date, default: Date.now }
 });
 
 const Product = mongoose.model('Product', productSchema);
 
-// --- 4. INITIALIZE GEMINI AI ---
+// --- 4. INITIALIZE GEMINI AI (UPDATED MODEL) ---
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); 
 
-// HELPER: Retry Logic for Gemini
+// ✅ SWITCHED TO PRO (Stable & Reliable for Dec 2025)
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" }); 
+
+// HELPER: Retry Logic
 async function generateWithRetry(prompt, imagePart, retries = 3) {
   for (let i = 0; i < retries; i++) {
     try {
@@ -63,29 +63,20 @@ async function generateWithRetry(prompt, imagePart, retries = 3) {
 
 // --- 5. ROUTES ---
 
-// Route 1: Admin Login Check
+// Route 1: Admin Login
 app.post('/login', (req, res) => {
   const { password } = req.body;
-
-  if (!process.env.ADMIN_PASSWORD) {
-     console.log("❌ ERROR: ADMIN_PASSWORD is missing in Render Environment Variables!");
-     return res.status(500).json({ error: "Server config error" });
-  }
-
   if (password === process.env.ADMIN_PASSWORD) {
-    console.log("✅ Success! Passwords match.");
     res.json({ success: true, message: "Welcome Queen!" });
   } else {
-    console.log("⛔ Failed! Passwords do NOT match.");
     res.status(401).json({ success: false, error: "Wrong Password" });
   }
 });
 
-// Route 2: Generate Description (MODIFIED FOR DEBUGGING)
+// Route 2: Generate Description
 app.post('/generate-description', upload.array('images', 5), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
-        console.log("❌ Error: No images received from Frontend");
         return res.status(400).json({ error: "No images uploaded" });
     }
 
@@ -96,8 +87,6 @@ app.post('/generate-description', upload.array('images', 5), async (req, res) =>
         mimeType: firstFile.mimetype,
       },
     };
-
-    console.log("✨ Sending image to Gemini..."); // Log progress
 
     const prompt = `
       You are an expert Indian fashion curator. Analyze this saree.
@@ -115,24 +104,22 @@ app.post('/generate-description', upload.array('images', 5), async (req, res) =>
     let text = await generateWithRetry(prompt, imagePart);
     text = text.replace(/```json/g, '').replace(/```/g, '').trim();
     
-    console.log("✅ Gemini Success!"); // Log success
+    console.log("✅ Gemini Success!");
     res.json(JSON.parse(text));
 
   } catch (error) {
-    // --- DEBUG: PRINT REAL ERROR TO RENDER LOGS ---
     console.error("❌ CRITICAL GEMINI ERROR:", error);
-    res.status(500).json({ error: "AI Failed. Check Render Logs for details." });
+    res.status(500).json({ error: "AI Failed. Check Render Logs." });
   }
 });
 
-// Route 3: Create New Product
+// Route 3: Create Product
 app.post('/products', async (req, res) => {
   try {
     const newProduct = new Product(req.body);
     await newProduct.save();
     res.status(201).json(newProduct);
   } catch (error) {
-    console.error("Product Save Error:", error);
     res.status(500).json({ error: "Failed to save product" });
   }
 });
@@ -168,7 +155,7 @@ app.delete('/products/:id', async (req, res) => {
   }
 });
 
-// Route 7: Update Product (EDIT)
+// Route 7: Update Product
 app.put('/products/:id', async (req, res) => {
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
@@ -182,7 +169,6 @@ app.put('/products/:id', async (req, res) => {
   }
 });
 
-// Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
