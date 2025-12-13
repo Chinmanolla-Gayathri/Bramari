@@ -37,11 +37,12 @@ const productSchema = new mongoose.Schema({
 
 const Product = mongoose.model('Product', productSchema);
 
-// --- 4. INITIALIZE GEMINI AI (UPDATED MODEL) ---
+// --- 4. INITIALIZE GEMINI AI ---
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// ✅ SWITCHED TO PRO (Stable & Reliable for Dec 2025)
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" }); 
+// ✅ USING USER PREFERRED MODEL: 2.5 FLASH
+// Note: If this model is experimental, ensure your API Key has access.
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); 
 
 // HELPER: Retry Logic
 async function generateWithRetry(prompt, imagePart, retries = 3) {
@@ -52,7 +53,7 @@ async function generateWithRetry(prompt, imagePart, retries = 3) {
       return response.text();
     } catch (error) {
       if ((error.message.includes('503') || error.message.includes('Overloaded')) && i < retries - 1) {
-        console.log(`⚠️ Gemini busy (503). Retrying... (${i + 1}/${retries})`);
+        console.log(`⚠️ Gemini busy. Retrying... (${i + 1}/${retries})`);
         await new Promise(res => setTimeout(res, 2000));
       } else {
         throw error;
@@ -73,7 +74,7 @@ app.post('/login', (req, res) => {
   }
 });
 
-// Route 2: Generate Description
+// Route 2: Generate Description (With Error Logging)
 app.post('/generate-description', upload.array('images', 5), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
@@ -101,6 +102,7 @@ app.post('/generate-description', upload.array('images', 5), async (req, res) =>
       }
     `;
 
+    console.log(`✨ Sending request to Gemini (Model: gemini-2.5-flash)...`);
     let text = await generateWithRetry(prompt, imagePart);
     text = text.replace(/```json/g, '').replace(/```/g, '').trim();
     
@@ -108,8 +110,9 @@ app.post('/generate-description', upload.array('images', 5), async (req, res) =>
     res.json(JSON.parse(text));
 
   } catch (error) {
-    console.error("❌ CRITICAL GEMINI ERROR:", error);
-    res.status(500).json({ error: "AI Failed. Check Render Logs." });
+    console.error("❌ GEMINI ERROR:", error);
+    // Return the actual error message so you can see if it's 404 or 400
+    res.status(500).json({ error: error.message || "AI Generation Failed" });
   }
 });
 
