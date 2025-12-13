@@ -63,7 +63,7 @@ async function generateWithRetry(prompt, imagePart, retries = 3) {
 
 // --- 5. ROUTES ---
 
-// Route 1: Admin Login Check (UPDATED WITH LOGS)
+// Route 1: Admin Login Check
 app.post('/login', (req, res) => {
   const { password } = req.body;
 
@@ -81,10 +81,13 @@ app.post('/login', (req, res) => {
   }
 });
 
-// Route 2: Generate Description (Gemini AI)
+// Route 2: Generate Description (MODIFIED FOR DEBUGGING)
 app.post('/generate-description', upload.array('images', 5), async (req, res) => {
   try {
-    if (!req.files || req.files.length === 0) return res.status(400).json({ error: "No images uploaded" });
+    if (!req.files || req.files.length === 0) {
+        console.log("❌ Error: No images received from Frontend");
+        return res.status(400).json({ error: "No images uploaded" });
+    }
 
     const firstFile = req.files[0];
     const imagePart = {
@@ -93,6 +96,8 @@ app.post('/generate-description', upload.array('images', 5), async (req, res) =>
         mimeType: firstFile.mimetype,
       },
     };
+
+    console.log("✨ Sending image to Gemini..."); // Log progress
 
     const prompt = `
       You are an expert Indian fashion curator. Analyze this saree.
@@ -109,11 +114,14 @@ app.post('/generate-description', upload.array('images', 5), async (req, res) =>
 
     let text = await generateWithRetry(prompt, imagePart);
     text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    
+    console.log("✅ Gemini Success!"); // Log success
     res.json(JSON.parse(text));
 
   } catch (error) {
-    console.error("Gemini Error:", error.message);
-    res.status(500).json({ error: "AI Error: Model is overloaded. Please try again." });
+    // --- DEBUG: PRINT REAL ERROR TO RENDER LOGS ---
+    console.error("❌ CRITICAL GEMINI ERROR:", error);
+    res.status(500).json({ error: "AI Failed. Check Render Logs for details." });
   }
 });
 
@@ -124,6 +132,7 @@ app.post('/products', async (req, res) => {
     await newProduct.save();
     res.status(201).json(newProduct);
   } catch (error) {
+    console.error("Product Save Error:", error);
     res.status(500).json({ error: "Failed to save product" });
   }
 });
