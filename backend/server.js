@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors'); // The Fix!
+const cors = require('cors'); 
 const multer = require('multer');
 const mongoose = require('mongoose');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -8,13 +8,16 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
-// --- 1. MIDDLEWARE (With CORS Fix) ---
+// --- 1. MIDDLEWARE ---
+// Put CORS first to handle all connection requests immediately
 app.use(cors({
-    origin: '*', // Allow Vercel to access this backend
+    origin: '*', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json({ limit: '50mb' })); // High limit for image uploads
+
+// Body parser comes next
+app.use(express.json({ limit: '50mb' })); 
 
 // --- 2. CONNECT TO MONGODB ---
 mongoose.connect(process.env.MONGO_URI)
@@ -38,7 +41,6 @@ const Product = mongoose.model('Product', productSchema);
 
 // --- 4. INITIALIZE GEMINI AI ---
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-// Note: Changed to 1.5-flash as 2.5 is not standard yet
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); 
 
 // HELPER: Retry Logic for Gemini
@@ -61,12 +63,27 @@ async function generateWithRetry(prompt, imagePart, retries = 3) {
 
 // --- 5. ROUTES ---
 
-// Route 1: Admin Login Check
+// Route 1: Admin Login Check (UPDATED WITH LOGS)
 app.post('/login', (req, res) => {
   const { password } = req.body;
+
+  // --- DEBUGGING LOGS ---
+  console.log("------------------------------------------------");
+  console.log("👉 Login Attempt Detected!");
+  console.log("📥 Password received from Frontend:", `'${password}'`); // Wrapped in quotes to see spaces
+  console.log("🔐 Password stored in Render:", `'${process.env.ADMIN_PASSWORD}'`);
+  console.log("------------------------------------------------");
+
+  if (!process.env.ADMIN_PASSWORD) {
+     console.log("❌ ERROR: ADMIN_PASSWORD is missing in Render Environment Variables!");
+     return res.status(500).json({ error: "Server config error" });
+  }
+
   if (password === process.env.ADMIN_PASSWORD) {
+    console.log("✅ Success! Passwords match.");
     res.json({ success: true, message: "Welcome Queen!" });
   } else {
+    console.log("⛔ Failed! Passwords do NOT match.");
     res.status(401).json({ success: false, error: "Wrong Password" });
   }
 });
