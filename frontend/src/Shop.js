@@ -59,13 +59,27 @@ function Shop() {
     return () => clearInterval(timer);
   }, []); 
 
+  // --- SAFE FETCH WITH ERROR HANDLING ---
   useEffect(() => {
     setTimeout(() => {
-      fetch('https://bramari.onrender.com/products').then(res => res.json()).then(data => {
-          setProducts(data);
-          setFilteredProducts(data.reverse());
-          setLoading(false);
-      });
+      fetch('https://bramari.onrender.com/products')
+        .then(res => res.json())
+        .then(data => {
+            if (Array.isArray(data)) {
+                setProducts(data);
+                setFilteredProducts([...data].reverse());
+                setLoading(false);
+            } else {
+                console.error("API Error - Invalid Data Format:", data);
+                setProducts([]);
+                setFilteredProducts([]);
+                setLoading(false);
+            }
+        })
+        .catch(err => {
+            console.error("Network Error:", err);
+            setLoading(false);
+        });
     }, 1000);
   }, []);
 
@@ -146,7 +160,6 @@ function Shop() {
       {/* NAVBAR (UPDATED BIGGER LOGO) */}
       <nav className="bg-white/95 backdrop-blur-md text-saree-maroon p-4 sticky top-0 z-50 shadow-sm flex justify-between items-center px-4 md:px-8">
         <div className="flex items-center gap-3">
-            {/* Logo increased from h-12 w-12 to h-20 w-20 */}
             <img src="/logo.jpg" alt="Bramari Logo" className="h-20 w-20 rounded-full object-cover border-2 border-saree-gold shadow-md transition-transform hover:scale-105" />
             <h1 className="text-3xl md:text-4xl font-serif font-bold tracking-wider text-saree-maroon">Bramari</h1>
         </div>
@@ -266,7 +279,6 @@ function Shop() {
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-10 mb-16">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-3 mb-6">
-                {/* Logo increased from h-14 w-14 to h-24 w-24 */}
                 <img src="/logo.jpg" alt="Bramari Logo" className="h-24 w-24 rounded-full border-2 border-saree-gold transition-transform hover:scale-105" />
                 <h3 className="text-4xl font-serif font-bold text-saree-gold">Bramari</h3>
             </div>

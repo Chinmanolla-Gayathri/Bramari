@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
+const cors = require('cors'); // The Fix!
 const multer = require('multer');
 const mongoose = require('mongoose');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -8,16 +8,20 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Middleware
-app.use(cors());
+// --- 1. MIDDLEWARE (With CORS Fix) ---
+app.use(cors({
+    origin: '*', // Allow Vercel to access this backend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json({ limit: '50mb' })); // High limit for image uploads
 
-// 1. Connect to MongoDB
+// --- 2. CONNECT TO MONGODB ---
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected Successfully"))
   .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
-// 2. Define Product Schema
+// --- 3. DEFINE PRODUCT SCHEMA ---
 const productSchema = new mongoose.Schema({
   title: String,
   fabric: String,
@@ -32,11 +36,12 @@ const productSchema = new mongoose.Schema({
 
 const Product = mongoose.model('Product', productSchema);
 
-// 3. Initialize Gemini AI
+// --- 4. INITIALIZE GEMINI AI ---
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+// Note: Changed to 1.5-flash as 2.5 is not standard yet
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); 
 
-// HELPER: Retry Logic for Gemini (Fixes "503 Overloaded" errors)
+// HELPER: Retry Logic for Gemini
 async function generateWithRetry(prompt, imagePart, retries = 3) {
   for (let i = 0; i < retries; i++) {
     try {
@@ -46,7 +51,7 @@ async function generateWithRetry(prompt, imagePart, retries = 3) {
     } catch (error) {
       if ((error.message.includes('503') || error.message.includes('Overloaded')) && i < retries - 1) {
         console.log(`⚠️ Gemini busy (503). Retrying... (${i + 1}/${retries})`);
-        await new Promise(res => setTimeout(res, 2000)); // Wait 2 seconds
+        await new Promise(res => setTimeout(res, 2000));
       } else {
         throw error;
       }
@@ -54,7 +59,7 @@ async function generateWithRetry(prompt, imagePart, retries = 3) {
   }
 }
 
-// --- ROUTES ---
+// --- 5. ROUTES ---
 
 // Route 1: Admin Login Check
 app.post('/login', (req, res) => {
@@ -66,7 +71,7 @@ app.post('/login', (req, res) => {
   }
 });
 
-// Route 2: Generate Description (Gemini AI Only)
+// Route 2: Generate Description (Gemini AI)
 app.post('/generate-description', upload.array('images', 5), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) return res.status(400).json({ error: "No images uploaded" });
@@ -144,13 +149,13 @@ app.delete('/products/:id', async (req, res) => {
   }
 });
 
-// Route 7: Update Product (EDIT Feature)
+// Route 7: Update Product (EDIT)
 app.put('/products/:id', async (req, res) => {
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id, 
       req.body, 
-      { new: true } // Return the updated document
+      { new: true }
     );
     res.json(updatedProduct);
   } catch (error) {
@@ -158,6 +163,7 @@ app.put('/products/:id', async (req, res) => {
   }
 });
 
+// Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
