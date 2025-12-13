@@ -61,7 +61,7 @@ function Shop() {
 
   useEffect(() => {
     setTimeout(() => {
-      fetch('http://localhost:5000/products').then(res => res.json()).then(data => {
+      fetch('https://bramari.onrender.com/products').then(res => res.json()).then(data => {
           setProducts(data);
           setFilteredProducts(data.reverse());
           setLoading(false);

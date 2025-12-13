@@ -21,7 +21,7 @@ function Admin() {
   useEffect(() => { fetchProducts(); }, []);
 
   const fetchProducts = () => {
-    fetch('http://localhost:5000/products').then(res => res.json()).then(data => setProducts(data));
+    fetch('https://bramari.onrender.com/products').then(res => res.json()).then(data => setProducts(data));
   };
 
   const handleFileChange = (e) => {
@@ -72,7 +72,7 @@ function Admin() {
     selectedFiles.forEach(file => data.append('images', file));
 
     try {
-      const res = await fetch('http://localhost:5000/generate-description', { method: 'POST', body: data });
+      const res = await fetch('https://bramari.onrender.com/generate-description', { method: 'POST', body: data });
       const result = await res.json();
       setFormData(prev => ({ ...prev, ...result, price: prev.price }));
       toast.success("Gemini Analysis Complete! 🧠");
@@ -99,14 +99,14 @@ function Admin() {
       let res;
       if (editingId) {
         // UPDATE
-        res = await fetch(`http://localhost:5000/products/${editingId}`, {
+        res = await fetch(`https://bramari.onrender.com/products/${editingId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(productPayload),
         });
       } else {
         // CREATE
-        res = await fetch('http://localhost:5000/products', {
+        res = await fetch('https://bramari.onrender.com/products', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(productPayload),
@@ -125,7 +125,7 @@ function Admin() {
 
   const handleDelete = async (id) => {
     if (window.confirm("Delete this saree permanently?")) {
-      await fetch(`http://localhost:5000/products/${id}`, { method: 'DELETE' });
+      await fetch(`https://bramari.onrender.com/products/${id}`, { method: 'DELETE' });
       fetchProducts();
       toast.success("Deleted!");
     }

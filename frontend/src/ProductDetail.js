@@ -27,7 +27,7 @@ function ProductDetail() {
   const SELLER_NUMBER = "919491950909"; 
 
   useEffect(() => {
-    fetch('http://localhost:5000/products').then(res => res.json()).then(allProducts => {
+    fetch('https://bramari.onrender.com/products').then(res => res.json()).then(allProducts => {
         const current = allProducts.find(p => p._id === id);
         setProduct(current);
         if (current) {
