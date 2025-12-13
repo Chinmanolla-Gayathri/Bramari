@@ -67,13 +67,6 @@ async function generateWithRetry(prompt, imagePart, retries = 3) {
 app.post('/login', (req, res) => {
   const { password } = req.body;
 
-  // --- DEBUGGING LOGS ---
-  console.log("------------------------------------------------");
-  console.log("👉 Login Attempt Detected!");
-  console.log("📥 Password received from Frontend:", `'${password}'`); // Wrapped in quotes to see spaces
-  console.log("🔐 Password stored in Render:", `'${process.env.ADMIN_PASSWORD}'`);
-  console.log("------------------------------------------------");
-
   if (!process.env.ADMIN_PASSWORD) {
      console.log("❌ ERROR: ADMIN_PASSWORD is missing in Render Environment Variables!");
      return res.status(500).json({ error: "Server config error" });
