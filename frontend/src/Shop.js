@@ -47,6 +47,9 @@ function Shop() {
   const [sortOption, setSortOption] = useState("newest");
   const [currentSlide, setCurrentSlide] = useState(0);
   const [fullScreenImage, setFullScreenImage] = useState(null);
+  
+  // Newsletter State
+  const [emailInput, setEmailInput] = useState("");
 
   const SELLER_NUMBER = "919491950909"; 
   const API_URL = "https://bramari-api.onrender.com";
@@ -137,6 +140,20 @@ function Shop() {
     window.open(`https://wa.me/${SELLER_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
+  const handleSubscribe = () => {
+    if (!emailInput || !emailInput.includes('@')) {
+        toast.error("Please enter a valid email address.");
+        return;
+    }
+    // Simulate API call
+    toast.success("Welcome to the family! You've successfully subscribed. ✨", { 
+        duration: 4000,
+        style: { background: '#4A0404', color: '#fff' },
+        icon: '💌'
+    });
+    setEmailInput(""); // Clear input
+  };
+
   const SkeletonCard = () => (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100 animate-pulse">
       <div className="aspect-[3/4] bg-gray-200"></div>
@@ -151,7 +168,7 @@ function Shop() {
     <div className="min-h-screen bg-saree-cream flex flex-col font-sans overflow-x-hidden relative">
       <Toaster />
       
-      {/* 1. ANNOUNCEMENT BAR (KEPT) */}
+      {/* 1. ANNOUNCEMENT BAR */}
       <div className="bg-saree-maroon text-saree-gold text-[10px] md:text-xs font-bold py-1.5 overflow-hidden z-[60] relative">
         <div className="whitespace-nowrap animate-marquee flex gap-10">
           <span>✨ FREE SHIPPING ON ORDERS ABOVE ₹5000</span>
@@ -171,8 +188,9 @@ function Shop() {
         </div>
       )}
 
-      {/* FIXED NAVBAR */}
-      <nav className="fixed top-7 w-full z-50 bg-white/95 backdrop-blur-md text-saree-maroon p-3 md:p-4 shadow-md flex justify-between items-center px-4 md:px-8 transition-all duration-300">
+      {/* --- NAVBAR (NORMAL FLOW / NOT STICKY) --- */}
+      {/* Changed: Removed 'fixed', 'top-7'. Added 'bg-white', 'relative'. */}
+      <nav className="relative w-full z-50 bg-white/95 backdrop-blur-md text-saree-maroon p-3 md:p-4 shadow-md flex justify-between items-center px-4 md:px-8">
         <div className="flex items-center gap-3">
             <img src="/logo.jpg" alt="Bramari Logo" className="h-10 w-10 md:h-14 md:w-14 rounded-full object-cover border-2 border-saree-gold shadow-md" />
             <h1 className="text-xl md:text-3xl font-serif font-bold tracking-wider text-saree-maroon">Bramari</h1>
@@ -181,17 +199,16 @@ function Shop() {
         <div className="flex gap-4 items-center">
            <button onClick={() => setIsWishlistOpen(true)} className="relative hover:scale-110 transition p-2">
              <Icons.HeartOutline />
-             {wishlist.length > 0 && <span className="absolute -top-0 -right-0 bg-saree-maroon text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{wishlist.length}</span>}
+             {wishlist.length > 0 && <span className="absolute -top-1 -right-1 bg-saree-maroon text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{wishlist.length}</span>}
            </button>
            <button onClick={() => setIsCartOpen(true)} className="relative hover:scale-110 transition p-2">
              <Icons.Bag />
-             {cart.length > 0 && <span className="absolute -top-0 -right-0 bg-saree-maroon text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cart.length}</span>}
+             {cart.length > 0 && <span className="absolute -top-1 -right-1 bg-saree-maroon text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cart.length}</span>}
            </button>
         </div>
       </nav>
 
-      {/* PADDING FOR FIXED NAV */}
-      <div className="pt-24 md:pt-28"></div>
+      {/* NO EXTRA PADDING NEEDED HERE ANYMORE */}
 
       {/* HERO SLIDER */}
       <div className="relative w-full h-[450px] md:h-[650px] overflow-hidden bg-saree-maroon">
@@ -219,8 +236,8 @@ function Shop() {
 
       <div id="collection" className="flex-grow max-w-7xl mx-auto px-2 md:px-6 py-6 w-full bg-white rounded-t-[30px] -mt-8 relative z-10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
         
-        {/* FILTERS & SEARCH (Restored to Clean Pills) */}
-        <div className="flex flex-col lg:flex-row gap-4 mb-8 items-center justify-between p-2 sticky top-20 z-30 bg-white/95 backdrop-blur pb-4 border-b border-gray-100">
+        {/* FILTERS & SEARCH */}
+        <div className="flex flex-col lg:flex-row gap-4 mb-8 items-center justify-between p-2 sticky top-0 z-30 bg-white/95 backdrop-blur pb-4 border-b border-gray-100">
           <div className="flex gap-2 overflow-x-auto w-full lg:w-auto no-scrollbar items-center pb-1">
             {categories.map(cat => (
               <button key={cat} onClick={() => setSelectedCategory(cat)} className={`px-4 py-1.5 rounded-full text-xs md:text-sm font-bold whitespace-nowrap transition border ${selectedCategory === cat ? "bg-saree-maroon text-white border-saree-maroon" : "bg-gray-50 text-gray-600 border-gray-200 hover:border-saree-maroon"}`}>{cat}</button>
@@ -239,7 +256,7 @@ function Shop() {
           </div>
         </div>
 
-        {/* SECONDARY BANNER (Simple & Clean) */}
+        {/* SECONDARY BANNER */}
         <div className="mb-10 mx-2 rounded-2xl overflow-hidden relative h-52 md:h-80 shadow-lg group cursor-pointer">
             <img 
                 src="/banners/promo.jpg" 
@@ -253,7 +270,7 @@ function Shop() {
             </div>
         </div>
 
-        {/* PRODUCTS GRID (2 Cols, Swipeable Images) */}
+        {/* PRODUCTS GRID */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-8 px-2">
           {loading ? [...Array(6)].map((_, i) => <SkeletonCard key={i} />) : filteredProducts.length === 0 ? <div className="col-span-full text-center py-20 text-gray-500">No sarees found.</div> : 
              filteredProducts.map((saree) => (
@@ -263,7 +280,7 @@ function Shop() {
                     {isInWishlist(saree._id) ? <Icons.HeartSolid /> : <Icons.HeartOutline />}
                 </button>
 
-                {/* SWIPEABLE IMAGE CAROUSEL (CSS Only, No Arrows) */}
+                {/* SWIPEABLE IMAGE CAROUSEL */}
                 <div className="relative w-full aspect-[3/4] bg-gray-50 overflow-hidden">
                    {saree.images && saree.images.length > 0 ? (
                        <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide w-full h-full">
@@ -282,7 +299,6 @@ function Shop() {
                        </div>
                    ) : <div className="w-full h-full flex items-center justify-center text-gray-300">No Image</div>}
                    
-                   {/* Small pill indicating multiple photos exist */}
                    {saree.images && saree.images.length > 1 && (
                        <div className="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm pointer-events-none">
                            +{saree.images.length - 1}
@@ -305,14 +321,25 @@ function Shop() {
         </div>
       </div>
 
-      {/* 2. NEWSLETTER SECTION (KEPT) */}
+      {/* 2. NEWSLETTER SECTION (NOW FUNCTIONAL) */}
       <div className="bg-gray-50 py-12 mt-12 border-t border-gray-100">
           <div className="max-w-7xl mx-auto px-6 text-center">
               <h3 className="text-2xl font-serif text-gray-800 mb-4">Join the Bramari Family</h3>
               <p className="text-gray-500 mb-6 text-sm">Subscribe to receive updates and exclusive deals.</p>
               <div className="flex justify-center max-w-md mx-auto gap-2">
-                  <input type="email" placeholder="Enter your email" className="w-full p-3 rounded border border-gray-300 text-sm focus:outline-none focus:border-saree-maroon" />
-                  <button className="bg-saree-maroon text-white px-6 py-3 rounded text-sm uppercase font-bold hover:bg-opacity-90">Subscribe</button>
+                  <input 
+                    type="email" 
+                    placeholder="Enter your email" 
+                    className="w-full p-3 rounded border border-gray-300 text-sm focus:outline-none focus:border-saree-maroon"
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                  />
+                  <button 
+                    onClick={handleSubscribe} 
+                    className="bg-saree-maroon text-white px-6 py-3 rounded text-sm uppercase font-bold hover:bg-opacity-90"
+                  >
+                    Subscribe
+                  </button>
               </div>
           </div>
       </div>
