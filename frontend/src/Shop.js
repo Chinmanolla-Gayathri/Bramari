@@ -52,7 +52,7 @@ function Shop() {
   const [emailInput, setEmailInput] = useState("");
 
   const SELLER_NUMBER = "919491950909"; 
-  const API_URL = "https://bramari-api.onrender.com";
+  const API_URL = "https://bramari.onrender.com";
   
   const categories = ["All", "Silk", "Cotton", "Georgette", "Wedding", "Party Wear"];
 
