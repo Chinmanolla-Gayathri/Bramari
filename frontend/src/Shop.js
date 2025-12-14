@@ -13,7 +13,8 @@ const Icons = {
   Instagram: () => <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>,
   Facebook: () => <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>,
   Phone: () => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 006.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 5.25V4.5z" clipRule="evenodd" /></svg>,
-  Mail: () => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z" /><path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z" /></svg>
+  Mail: () => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z" /><path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z" /></svg>,
+  ChevronRight: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
 };
 
 // --- LOCAL BANNERS ---
@@ -49,9 +50,11 @@ function Shop() {
   const [fullScreenImage, setFullScreenImage] = useState(null);
 
   const SELLER_NUMBER = "919491950909"; 
+  const API_URL = "https://bramari-api.onrender.com"; // Updated to handle tracking
   
   const categories = ["All", "Silk", "Cotton", "Georgette", "Wedding", "Party Wear"];
 
+  // --- HERO SLIDER TIMER ---
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % banners.length);
@@ -59,10 +62,11 @@ function Shop() {
     return () => clearInterval(timer);
   }, []); 
 
-  // --- SAFE FETCH WITH ERROR HANDLING ---
+  // --- 1. FETCH PRODUCTS & 2. TRACK VISITORS ---
   useEffect(() => {
+    // A. Fetch Products
     setTimeout(() => {
-      fetch('https://bramari.onrender.com/products')
+      fetch(`${API_URL}/products`)
         .then(res => res.json())
         .then(data => {
             if (Array.isArray(data)) {
@@ -70,7 +74,6 @@ function Shop() {
                 setFilteredProducts([...data].reverse());
                 setLoading(false);
             } else {
-                console.error("API Error - Invalid Data Format:", data);
                 setProducts([]);
                 setFilteredProducts([]);
                 setLoading(false);
@@ -81,6 +84,10 @@ function Shop() {
             setLoading(false);
         });
     }, 1000);
+
+    // B. Track Visit (Professional Analytics)
+    fetch(`${API_URL}/track-visit`)
+        .catch(err => console.log("Tracking error (ignored):", err));
   }, []);
 
   useEffect(() => localStorage.setItem('bramari_wishlist', JSON.stringify(wishlist)), [wishlist]);
@@ -137,10 +144,10 @@ function Shop() {
 
   const SkeletonCard = () => (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100 animate-pulse">
-      <div className="h-80 bg-gray-200"></div>
-      <div className="p-4 space-y-3">
-        <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
-        <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+      <div className="aspect-[3/4] bg-gray-200"></div>
+      <div className="p-3 space-y-2">
+        <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
       </div>
     </div>
   );
@@ -157,27 +164,30 @@ function Shop() {
         </div>
       )}
 
-      {/* NAVBAR (UPDATED BIGGER LOGO) */}
-      <nav className="bg-white/95 backdrop-blur-md text-saree-maroon p-4 sticky top-0 z-50 shadow-sm flex justify-between items-center px-4 md:px-8">
+      {/* --- FIXED NAVBAR (Pro Upgrade: Uses 'fixed' so it NEVER scrolls away) --- */}
+      <nav className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md text-saree-maroon p-3 md:p-4 shadow-md flex justify-between items-center px-4 md:px-8 transition-all duration-300">
         <div className="flex items-center gap-3">
-            <img src="/logo.jpg" alt="Bramari Logo" className="h-20 w-20 rounded-full object-cover border-2 border-saree-gold shadow-md transition-transform hover:scale-105" />
-            <h1 className="text-3xl md:text-4xl font-serif font-bold tracking-wider text-saree-maroon">Bramari</h1>
+            <img src="/logo.jpg" alt="Bramari Logo" className="h-12 w-12 md:h-16 md:w-16 rounded-full object-cover border-2 border-saree-gold shadow-md" />
+            <h1 className="text-2xl md:text-3xl font-serif font-bold tracking-wider text-saree-maroon">Bramari</h1>
         </div>
 
-        <div className="flex gap-5 items-center">
+        <div className="flex gap-4 items-center">
            <button onClick={() => setIsWishlistOpen(true)} className="relative hover:scale-110 transition p-2">
              <Icons.HeartOutline />
-             {wishlist.length > 0 && <span className="absolute top-0 right-0 bg-saree-maroon text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{wishlist.length}</span>}
+             {wishlist.length > 0 && <span className="absolute top-1 right-1 bg-saree-maroon text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{wishlist.length}</span>}
            </button>
            <button onClick={() => setIsCartOpen(true)} className="relative hover:scale-110 transition p-2">
              <Icons.Bag />
-             {cart.length > 0 && <span className="absolute top-0 right-0 bg-saree-maroon text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cart.length}</span>}
+             {cart.length > 0 && <span className="absolute top-1 right-1 bg-saree-maroon text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cart.length}</span>}
            </button>
         </div>
       </nav>
 
+      {/* Add padding to top because Navbar is fixed now */}
+      <div className="pt-20 md:pt-24"></div>
+
       {/* HERO SLIDER */}
-      <div className="relative w-full h-[500px] md:h-[600px] overflow-hidden bg-saree-maroon">
+      <div className="relative w-full h-[400px] md:h-[600px] overflow-hidden bg-saree-maroon">
         {banners.map((banner, index) => (
           <div 
             key={banner.id} 
@@ -187,86 +197,94 @@ function Shop() {
                 src={banner.image} 
                 alt="Banner" 
                 className={`w-full h-full object-cover transform transition-transform duration-[10000ms] ease-linear ${index === currentSlide ? 'scale-100' : 'scale-100'}`} 
-                onError={(e) => { e.target.src = "https://via.placeholder.com/1500x800/4a0404/ffffff?text=Add+Images+In+Public+Folder"; }} 
+                onError={(e) => { e.target.src = "https://via.placeholder.com/1500x800/4a0404/ffffff?text=Bramari+Silks"; }} 
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-saree-maroon via-saree-maroon/40 to-transparent flex flex-col items-center justify-center text-center px-4">
+            <div className="absolute inset-0 bg-gradient-to-t from-saree-maroon via-saree-maroon/30 to-transparent flex flex-col items-center justify-center text-center px-4">
               <div className="max-w-3xl animate-slideUp">
-                 <h2 className="text-5xl md:text-7xl font-serif font-bold mb-6 drop-shadow-2xl text-saree-gold">{banner.title}</h2>
-                 <p className="text-xl md:text-3xl text-white/95 mb-10 font-light tracking-wider">{banner.subtitle}</p>
-                 <button onClick={() => document.getElementById('collection').scrollIntoView({ behavior: 'smooth' })} className="bg-saree-gold text-saree-maroon px-10 py-4 rounded-full font-bold uppercase tracking-[0.2em] hover:bg-white transition shadow-2xl">Shop Now</button>
+                 <h2 className="text-4xl md:text-7xl font-serif font-bold mb-4 drop-shadow-2xl text-saree-gold">{banner.title}</h2>
+                 <p className="text-lg md:text-3xl text-white/95 mb-8 font-light tracking-wider">{banner.subtitle}</p>
+                 <button onClick={() => document.getElementById('collection').scrollIntoView({ behavior: 'smooth' })} className="bg-saree-gold text-saree-maroon px-8 py-3 rounded-full font-bold uppercase tracking-[0.2em] hover:bg-white transition shadow-2xl text-sm md:text-base">Shop Now</button>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div id="collection" className="flex-grow max-w-7xl mx-auto px-4 md:px-6 py-16 w-full bg-white rounded-t-[40px] -mt-10 relative z-10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+      <div id="collection" className="flex-grow max-w-7xl mx-auto px-2 md:px-6 py-10 w-full bg-white rounded-t-[30px] -mt-8 relative z-10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
         
-        {/* FILTERS */}
-        <div className="flex flex-col lg:flex-row gap-6 mb-12 items-center justify-between p-2">
-          <div className="flex gap-2 overflow-x-auto pb-2 lg:pb-0 w-full lg:w-auto no-scrollbar items-center">
-            <span className="text-xs font-bold uppercase text-gray-400 mr-2">Filter:</span>
+        {/* FILTERS & SEARCH */}
+        <div className="flex flex-col lg:flex-row gap-4 mb-8 items-center justify-between p-2 sticky top-24 z-30 bg-white/90 backdrop-blur pb-4 border-b border-gray-100">
+          <div className="flex gap-2 overflow-x-auto w-full lg:w-auto no-scrollbar items-center pb-1">
             {categories.map(cat => (
-              <button key={cat} onClick={() => setSelectedCategory(cat)} className={`px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap transition border ${selectedCategory === cat ? "bg-saree-maroon text-white border-saree-maroon" : "bg-white text-gray-600 border-gray-200 hover:border-saree-maroon"}`}>{cat}</button>
+              <button key={cat} onClick={() => setSelectedCategory(cat)} className={`px-4 py-1.5 rounded-full text-xs md:text-sm font-bold whitespace-nowrap transition border ${selectedCategory === cat ? "bg-saree-maroon text-white border-saree-maroon" : "bg-gray-50 text-gray-600 border-gray-200 hover:border-saree-maroon"}`}>{cat}</button>
             ))}
           </div>
-          <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
-            <div className="relative w-full sm:w-64">
-              <input type="text" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-saree-maroon" />
+          <div className="flex gap-2 w-full lg:w-auto">
+            <div className="relative w-full">
+              <input type="text" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-saree-maroon text-sm" />
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><Icons.Search /></div>
             </div>
-            <select value={sortOption} onChange={(e) => setSortOption(e.target.value)} className="p-2 border border-gray-200 rounded-lg text-sm font-bold text-gray-700 outline-none cursor-pointer">
-              <option value="newest">✨ Newest</option>
-              <option value="lowToHigh">💰 Low to High</option>
-              <option value="highToLow">💎 High to Low</option>
+            <select value={sortOption} onChange={(e) => setSortOption(e.target.value)} className="p-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-bold text-gray-700 outline-none cursor-pointer">
+              <option value="newest">Newest</option>
+              <option value="lowToHigh">Price: Low-High</option>
+              <option value="highToLow">Price: High-Low</option>
             </select>
           </div>
         </div>
 
-        {/* PROMO BANNER (LOCAL) */}
-        <div className="mb-16 rounded-2xl overflow-hidden relative h-64 md:h-80 shadow-2xl group cursor-pointer border-4 border-white">
-           <img 
-                src="/banners/promo.jpg" 
-                alt="Promo" 
-                className="w-full h-full object-cover transition duration-1000 group-hover:scale-105 brightness-[0.7]" 
-                onError={(e) => { e.target.src = "https://via.placeholder.com/1500x500/4a0404/ffffff?text=Add+promo.jpg+in+Public/Banners"; }}
-           />
-           <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-6 border-white/20 m-4 border rounded-xl">
-              <span className="text-saree-gold font-bold tracking-[0.3em] uppercase text-xs md:text-sm mb-4 bg-black/50 px-4 py-1 rounded-full backdrop-blur-sm">Limited Edition</span>
-              <h3 className="text-3xl md:text-6xl font-serif text-white font-bold mb-6 drop-shadow-lg">The Bridal Edit</h3>
-           </div>
-        </div>
-
-        {/* PRODUCTS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {loading ? [...Array(8)].map((_, i) => <SkeletonCard key={i} />) : filteredProducts.length === 0 ? <div className="col-span-full text-center py-20 text-gray-500">No sarees found.</div> : 
+        {/* --- PRODUCTS GRID (PRO UPGRADE: grid-cols-2 for mobile, gap-3) --- */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-8">
+          {loading ? [...Array(6)].map((_, i) => <SkeletonCard key={i} />) : filteredProducts.length === 0 ? <div className="col-span-full text-center py-20 text-gray-500">No sarees found matching criteria.</div> : 
              filteredProducts.map((saree) => (
-              <div key={saree._id} className="bg-white rounded-lg shadow-sm hover:shadow-2xl transition duration-300 border border-gray-100 group flex flex-col relative">
-                <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
-                    <button onClick={() => toggleWishlist(saree)} className="bg-white/90 p-2 rounded-full shadow hover:scale-110 transition text-saree-maroon">
-                        {isInWishlist(saree._id) ? <Icons.HeartSolid /> : <Icons.HeartOutline />}
-                    </button>
-                    {saree.images && saree.images.length > 0 && (
-                        <button onClick={() => setFullScreenImage(saree.images[0])} className="bg-white/90 p-2 rounded-full shadow hover:scale-110 transition text-gray-600 hover:text-saree-maroon" title="View Full Screen">
-                            <Icons.Zoom />
-                        </button>
-                    )}
+              <div key={saree._id} className="bg-white rounded-lg overflow-hidden border border-gray-100 group flex flex-col relative hover:shadow-xl transition-all duration-300">
+                
+                {/* WISHLIST BUTTON (Top Right) */}
+                <button onClick={() => toggleWishlist(saree)} className="absolute top-2 right-2 z-20 bg-white/80 backdrop-blur p-1.5 rounded-full shadow-sm text-saree-maroon hover:scale-110 transition">
+                    {isInWishlist(saree._id) ? <Icons.HeartSolid /> : <Icons.HeartOutline />}
+                </button>
+
+                {/* --- PRO FEATURE: SWIPEABLE CAROUSEL & UNIFORM ASPECT RATIO --- */}
+                <div className="relative w-full aspect-[3/4] bg-gray-50 overflow-hidden">
+                   {saree.images && saree.images.length > 0 ? (
+                       <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide w-full h-full">
+                           {saree.images.map((img, idx) => (
+                               <div key={idx} className="w-full h-full flex-shrink-0 snap-center relative">
+                                   <Link to={`/product/${saree._id}`}>
+                                     <img 
+                                        src={img.startsWith('data:') ? img : `data:image/jpeg;base64,${img}`} 
+                                        alt={`${saree.title} - view ${idx+1}`} 
+                                        className="w-full h-full object-cover" 
+                                        loading="lazy"
+                                     />
+                                   </Link>
+                               </div>
+                           ))}
+                       </div>
+                   ) : (
+                       <div className="w-full h-full flex items-center justify-center text-gray-300 bg-gray-100">No Image</div>
+                   )}
+                   
+                   {/* Image Counter (if multiple) */}
+                   {saree.images && saree.images.length > 1 && (
+                       <div className="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm pointer-events-none">
+                           More Photos
+                       </div>
+                   )}
                 </div>
-                <Link to={`/product/${saree._id}`}>
-                  <div className="h-96 bg-gray-50 p-2 overflow-hidden cursor-pointer flex items-center justify-center">
-                    {saree.images && saree.images.length > 0 ? (
-                      <img src={saree.images[0]} alt={saree.title} style={{ width: "100%", height: "100%", objectFit: "contain" }} className="transition duration-700 group-hover:scale-110" />
-                    ) : <div className="text-gray-400">No Image</div>}
+
+                {/* PRODUCT DETAILS (Compact & Clean) */}
+                <div className="p-3 flex flex-col flex-grow">
+                  <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1 truncate">{saree.fabric}</div>
+                  <Link to={`/product/${saree._id}`}><h3 className="text-sm md:text-lg font-serif font-semibold text-gray-900 mb-1 leading-tight hover:text-saree-maroon cursor-pointer line-clamp-2 min-h-[2.5em]">{saree.title}</h3></Link>
+                  
+                  <div className="flex items-center gap-2 mb-3 mt-auto">
+                    <span className="text-saree-maroon font-bold text-base md:text-lg">₹{saree.price.toLocaleString('en-IN')}</span>
+                    <span className="text-gray-400 line-through text-xs">₹{Math.round(saree.price * 1.2).toLocaleString('en-IN')}</span>
                   </div>
-                </Link>
-                <div className="p-4 text-center flex flex-col flex-grow">
-                  <div className="text-xs text-gray-400 uppercase tracking-widest mb-1">{saree.fabric}</div>
-                  <Link to={`/product/${saree._id}`}><h3 className="text-lg font-serif font-bold text-gray-900 mb-2 hover:text-saree-maroon cursor-pointer truncate px-2">{saree.title}</h3></Link>
-                  <div className="flex justify-center items-center gap-2 mb-4 mt-auto">
-                    <span className="text-gray-400 line-through text-xs">₹{Math.round(saree.price * 1.2)}</span>
-                    <span className="text-saree-maroon font-bold text-lg">₹{saree.price}</span>
-                  </div>
-                  <button onClick={() => addToCart(saree)} className="w-full bg-white border border-saree-maroon text-saree-maroon font-bold py-2 rounded hover:bg-saree-maroon hover:text-white transition uppercase text-xs tracking-wider flex items-center justify-center gap-2">Add to Cart</button>
+                  
+                  <button onClick={() => addToCart(saree)} className="w-full bg-white border border-saree-maroon text-saree-maroon font-bold py-2 rounded text-xs uppercase tracking-wider hover:bg-saree-maroon hover:text-white transition flex items-center justify-center gap-1 active:scale-95">
+                    Add to Cart
+                  </button>
                 </div>
               </div>
             ))
@@ -274,105 +292,82 @@ function Shop() {
         </div>
       </div>
 
-      {/* FOOTER (UPDATED BIGGER LOGO) */}
-      <footer className="bg-saree-maroon text-white pt-20 pb-10">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-10 mb-16">
+      {/* FOOTER */}
+      <footer className="bg-saree-maroon text-white pt-16 pb-8">
+        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center gap-3 mb-6">
-                <img src="/logo.jpg" alt="Bramari Logo" className="h-24 w-24 rounded-full border-2 border-saree-gold transition-transform hover:scale-105" />
-                <h3 className="text-4xl font-serif font-bold text-saree-gold">Bramari</h3>
+            <div className="flex items-center gap-3 mb-4">
+                <img src="/logo.jpg" alt="Logo" className="h-16 w-16 rounded-full border border-saree-gold" />
+                <h3 className="text-2xl font-serif font-bold text-saree-gold">Bramari</h3>
             </div>
-            <p className="text-gray-300 text-lg leading-relaxed max-w-md font-serif italic">"Where tradition meets technology. Curating the finest handwoven Indian sarees for the modern connoisseur."</p>
+            <p className="text-gray-300 text-sm leading-relaxed max-w-sm font-serif italic">"Tradition in every thread."</p>
           </div>
           <div>
-            <h4 className="font-bold mb-6 text-saree-gold uppercase tracking-wider text-sm">Shop</h4>
-            <ul className="space-y-3 text-gray-300">
-              <li><button onClick={() => {setSelectedCategory("Silk"); document.getElementById('collection').scrollIntoView()}} className="hover:text-saree-gold transition">Silk Sarees</button></li>
-              <li><button onClick={() => {setSelectedCategory("Wedding"); document.getElementById('collection').scrollIntoView()}} className="hover:text-saree-gold transition">Wedding Collection</button></li>
+            <h4 className="font-bold mb-4 text-saree-gold uppercase tracking-wider text-xs">Contact</h4>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li><a href="tel:+919491950909" className="hover:text-white flex items-center gap-2"><Icons.Phone /> +91 94919 50909</a></li>
+              <li><a href="mailto:bramarisilks@gmail.com" className="hover:text-white flex items-center gap-2"><Icons.Mail /> bramarisilks@gmail.com</a></li>
             </ul>
           </div>
-          <div>
-            <h4 className="font-bold mb-6 text-saree-gold uppercase tracking-wider text-sm">Contact Us</h4>
-            <ul className="space-y-3">
-              <li>
-                <a href="tel:+919491950909" className="flex items-center gap-2 text-gray-300 hover:text-white transition">
-                  <Icons.Phone /> +91 94919 50909
-                </a>
-              </li>
-              <li>
-                <a href="mailto:bramarisilks@gmail.com" className="flex items-center gap-2 text-gray-300 hover:text-white transition">
-                  <Icons.Mail /> bramarisilks@gmail.com
-                </a>
-              </li>
-            </ul>
-            
-            <div className="flex gap-4 mt-6">
-               <a href="https://www.instagram.com/bramarisilks?igsh=bTNoMHR1NGZrYXBv" target="_blank" rel="noreferrer" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-saree-gold hover:text-saree-maroon cursor-pointer transition text-lg">
-                 <Icons.Instagram />
-               </a>
-               <a href="https://facebook.com/bramarisilks" target="_blank" rel="noreferrer" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-saree-gold hover:text-saree-maroon cursor-pointer transition text-lg">
-                 <Icons.Facebook />
-               </a>
-            </div>
+          <div className="flex gap-4 items-start">
+               <a href="https://www.instagram.com/bramarisilks?igsh=bTNoMHR1NGZrYXBv" target="_blank" rel="noreferrer" className="bg-white/10 p-2 rounded-full hover:bg-saree-gold hover:text-saree-maroon transition"><Icons.Instagram /></a>
+               <a href="https://facebook.com/bramarisilks" target="_blank" rel="noreferrer" className="bg-white/10 p-2 rounded-full hover:bg-saree-gold hover:text-saree-maroon transition"><Icons.Facebook /></a>
           </div>
         </div>
-        <div className="text-center border-t border-white/10 pt-10 text-sm text-gray-400"><p>© 2025 Bramari Fashion. All Rights Reserved.</p></div>
+        <div className="text-center border-t border-white/10 pt-8 text-xs text-gray-400">© 2025 Bramari Fashion.</div>
       </footer>
 
-      {/* CART SIDEBAR */}
+      {/* CART SIDEBAR (Enhanced) */}
       {isCartOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[100] flex justify-end backdrop-blur-sm transition-opacity">
           <div className="bg-white w-full md:w-96 h-full p-6 shadow-2xl flex flex-col animate-slideIn">
             <div className="flex justify-between items-center border-b pb-4 mb-4">
-              <h2 className="text-2xl font-serif text-saree-maroon flex items-center gap-2"><Icons.Bag /> Your Cart</h2>
+              <h2 className="text-xl font-serif text-saree-maroon flex items-center gap-2"><Icons.Bag /> Cart ({cart.length})</h2>
               <button onClick={() => setIsCartOpen(false)}><Icons.Close /></button>
             </div>
-            <div className="flex-grow overflow-y-auto">
+            <div className="flex-grow overflow-y-auto pr-1">
               {cart.length === 0 ? <div className="flex flex-col items-center justify-center h-full text-gray-400"><Icons.Bag /><p>Your cart is empty.</p></div> : cart.map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-4 mb-4 border-b border-gray-100 pb-4">
-                    <Link to={`/product/${item._id}`} onClick={() => setIsCartOpen(false)} className="w-16 h-16 bg-gray-100 rounded overflow-hidden flex-shrink-0 border border-gray-200 p-1 block">
-                       {item.images && <img src={item.images[0]} alt="thumb" className="w-full h-full object-contain" />}
-                    </Link>
-                    <div className="flex-grow">
-                      <Link to={`/product/${item._id}`} onClick={() => setIsCartOpen(false)} className="block">
-                        <p className="font-bold truncate w-32 text-gray-800 hover:text-saree-maroon transition">{item.title}</p>
-                      </Link>
-                      <p className="text-sm text-gray-500">₹{item.price}</p>
+                  <div key={idx} className="flex items-start gap-3 mb-4 border-b border-gray-50 pb-4">
+                    <div className="w-16 h-20 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                        {item.images && <img src={item.images[0].startsWith('data:') ? item.images[0] : `data:image/jpeg;base64,${item.images[0]}`} alt="thumb" className="w-full h-full object-cover" />}
                     </div>
-                    <button onClick={() => removeFromCart(idx)} className="text-red-500 hover:bg-red-50 p-2 rounded transition" title="Remove"><Icons.Close className="w-5 h-5" /></button>
+                    <div className="flex-grow">
+                      <p className="font-semibold text-sm text-gray-800 line-clamp-1">{item.title}</p>
+                      <p className="text-xs text-gray-500 mb-1">{item.fabric}</p>
+                      <p className="text-sm font-bold text-saree-maroon">₹{item.price.toLocaleString('en-IN')}</p>
+                    </div>
+                    <button onClick={() => removeFromCart(idx)} className="text-gray-400 hover:text-red-500 p-1"><Icons.Close className="w-4 h-4" /></button>
                   </div>
               ))}
             </div>
             <div className="border-t pt-4 mt-auto">
-              <div className="flex justify-between text-xl font-bold mb-4 text-saree-maroon"><span>Total:</span><span>₹{cart.reduce((sum, item) => sum + item.price, 0)}</span></div>
-              <button onClick={handleCheckout} className="w-full bg-green-600 text-white py-3 rounded-lg font-bold shadow-lg hover:bg-green-700 transition flex justify-center items-center gap-2">Checkout on WhatsApp</button>
+              <div className="flex justify-between text-lg font-bold mb-4 text-saree-maroon"><span>Total</span><span>₹{cart.reduce((sum, item) => sum + item.price, 0).toLocaleString('en-IN')}</span></div>
+              <button onClick={handleCheckout} className="w-full bg-green-600 text-white py-3 rounded-lg font-bold shadow-lg hover:bg-green-700 transition flex justify-center items-center gap-2 text-sm uppercase tracking-wider">Checkout on WhatsApp</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* WISHLIST SIDEBAR */}
+      {/* WISHLIST SIDEBAR (Simplified for length) */}
       {isWishlistOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[100] flex justify-end backdrop-blur-sm">
           <div className="bg-white w-full md:w-96 h-full p-6 shadow-2xl flex flex-col border-l-4 border-saree-gold animate-slideIn">
             <div className="flex justify-between items-center border-b pb-4 mb-4">
-              <h2 className="text-2xl font-serif text-saree-maroon flex items-center gap-2"><Icons.HeartSolid /> My Wishlist</h2>
+              <h2 className="text-xl font-serif text-saree-maroon flex items-center gap-2"><Icons.HeartSolid /> Wishlist</h2>
               <button onClick={() => setIsWishlistOpen(false)}><Icons.Close /></button>
             </div>
-            <div className="flex-grow overflow-y-auto">
+            <div className="flex-grow overflow-y-auto pr-1">
               {wishlist.length === 0 ? <div className="flex flex-col items-center justify-center h-full text-gray-400"><Icons.HeartOutline /><p>Your wishlist is empty.</p></div> : wishlist.map((item) => (
-                  <div key={item._id} className="flex items-center gap-4 mb-4 border-b border-gray-100 pb-4">
-                    <Link to={`/product/${item._id}`} onClick={() => setIsWishlistOpen(false)} className="w-20 h-20 bg-gray-100 rounded overflow-hidden flex-shrink-0 border border-gray-200 p-1 block">
-                       {item.images && <img src={item.images[0]} alt="thumb" className="w-full h-full object-contain" />}
-                    </Link>
-                    <div className="flex-grow">
-                      <Link to={`/product/${item._id}`} onClick={() => setIsWishlistOpen(false)} className="block">
-                        <p className="font-bold truncate w-40 text-gray-800 hover:text-saree-maroon transition">{item.title}</p>
-                      </Link>
-                      <p className="text-sm text-gray-500 mb-2">₹{item.price}</p>
-                      <button onClick={() => { addToCart(item); toggleWishlist(item); }} className="text-[10px] bg-saree-maroon text-white px-3 py-1.5 rounded uppercase tracking-wide hover:bg-opacity-90 shadow-sm">Move to Cart</button>
+                  <div key={item._id} className="flex items-start gap-3 mb-4 border-b border-gray-50 pb-4">
+                    <div className="w-16 h-20 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                       {item.images && <img src={item.images[0].startsWith('data:') ? item.images[0] : `data:image/jpeg;base64,${item.images[0]}`} alt="thumb" className="w-full h-full object-cover" />}
                     </div>
-                    <button onClick={() => toggleWishlist(item)} className="text-gray-300 hover:text-red-500 transition"><Icons.Close /></button>
+                    <div className="flex-grow">
+                      <p className="font-semibold text-sm text-gray-800 line-clamp-1">{item.title}</p>
+                      <p className="text-sm font-bold text-saree-maroon mb-2">₹{item.price.toLocaleString('en-IN')}</p>
+                      <button onClick={() => { addToCart(item); toggleWishlist(item); }} className="text-[10px] bg-saree-maroon text-white px-3 py-1 rounded uppercase hover:bg-opacity-90">Add to Cart</button>
+                    </div>
+                    <button onClick={() => toggleWishlist(item)} className="text-gray-400 hover:text-red-500 p-1"><Icons.Close className="w-4 h-4" /></button>
                   </div>
               ))}
             </div>

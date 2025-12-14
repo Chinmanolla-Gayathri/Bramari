@@ -22,7 +22,9 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected Successfully"))
   .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
-// --- 3. DEFINE PRODUCT SCHEMA ---
+// --- 3. SCHEMAS ---
+
+// Product Schema
 const productSchema = new mongoose.Schema({
   title: String,
   fabric: String,
@@ -34,14 +36,19 @@ const productSchema = new mongoose.Schema({
   images: [String], 
   createdAt: { type: Date, default: Date.now }
 });
-
 const Product = mongoose.model('Product', productSchema);
+
+// ✅ NEW: Stats Schema (For Visitor Counting)
+const statsSchema = new mongoose.Schema({
+    views: { type: Number, default: 0 },
+    lastUpdated: { type: Date, default: Date.now }
+});
+const Stats = mongoose.model('Stats', statsSchema);
+
 
 // --- 4. INITIALIZE GEMINI AI ---
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-// ✅ USING USER PREFERRED MODEL: 2.5 FLASH
-// Note: If this model is experimental, ensure your API Key has access.
+// Using 2.5-flash as requested
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); 
 
 // HELPER: Retry Logic
@@ -64,6 +71,24 @@ async function generateWithRetry(prompt, imagePart, retries = 3) {
 
 // --- 5. ROUTES ---
 
+// Route: Track Visits (Call this from Shop.js)
+app.get('/track-visit', async (req, res) => {
+    try {
+      let stats = await Stats.findOne();
+      if (!stats) {
+        stats = new Stats({ views: 1 });
+      } else {
+        stats.views += 1;
+        stats.lastUpdated = Date.now();
+      }
+      await stats.save();
+      res.json({ views: stats.views });
+    } catch (error) {
+      console.error("Tracking Error:", error);
+      res.status(500).json({ error: "Tracking failed" });
+    }
+});
+
 // Route 1: Admin Login
 app.post('/login', (req, res) => {
   const { password } = req.body;
@@ -74,12 +99,10 @@ app.post('/login', (req, res) => {
   }
 });
 
-// Route 2: Generate Description (With Error Logging)
+// Route 2: Generate Description
 app.post('/generate-description', upload.array('images', 5), async (req, res) => {
   try {
-    if (!req.files || req.files.length === 0) {
-        return res.status(400).json({ error: "No images uploaded" });
-    }
+    if (!req.files || req.files.length === 0) return res.status(400).json({ error: "No images uploaded" });
 
     const firstFile = req.files[0];
     const imagePart = {
@@ -102,7 +125,7 @@ app.post('/generate-description', upload.array('images', 5), async (req, res) =>
       }
     `;
 
-    console.log(`✨ Sending request to Gemini (Model: gemini-2.5-flash)...`);
+    console.log(`✨ Sending request to Gemini...`);
     let text = await generateWithRetry(prompt, imagePart);
     text = text.replace(/```json/g, '').replace(/```/g, '').trim();
     
@@ -111,7 +134,6 @@ app.post('/generate-description', upload.array('images', 5), async (req, res) =>
 
   } catch (error) {
     console.error("❌ GEMINI ERROR:", error);
-    // Return the actual error message so you can see if it's 404 or 400
     res.status(500).json({ error: error.message || "AI Generation Failed" });
   }
 });
