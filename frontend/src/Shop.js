@@ -14,24 +14,15 @@ const Icons = {
   Facebook: () => <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>,
   Phone: () => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 006.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 5.25V4.5z" clipRule="evenodd" /></svg>,
   Mail: () => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z" /><path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z" /></svg>,
-  WhatsApp: () => <svg fill="currentColor" viewBox="0 0 24 24" className="w-6 h-6"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.008-.57-.008-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
 };
 
 // --- BANNERS ---
 const banners = [
   { id: 1, image: "/banners/1.jpg", title: "The Royal Kanjeevaram", subtitle: "Woven heritage for the modern bride." },
   { id: 2, image: "/banners/2.jpg", title: "The Pastel Edit", subtitle: "Soft hues for elegant day weddings." },
-  { id: 3, image: "/banners/3.jpg", title: "Weaves of Banaras", subtitle: "Experience the timeless grace of silk." }
-];
-
-// --- STORY CATEGORIES (Instagram Style) ---
-const storyCategories = [
-    { name: "All", color: "bg-gray-800" },
-    { name: "Silk", color: "bg-pink-700" },
-    { name: "Cotton", color: "bg-blue-600" },
-    { name: "Wedding", color: "bg-red-700" },
-    { name: "Party", color: "bg-purple-700" },
-    { name: "Festive", color: "bg-orange-600" },
+  { id: 3, image: "/banners/3.jpg", title: "Weaves of Banaras", subtitle: "Experience the timeless grace of silk." },
+  { id: 4, image: "/banners/4.jpg", title: "Handloom Heritage", subtitle: "Authentic craftsmanship in every thread." },
+  { id: 5, image: "/banners/5.jpg", title: "Festival Ready", subtitle: "Shine bright with our Zari collection." }
 ];
 
 function Shop() {
@@ -58,8 +49,10 @@ function Shop() {
   const [fullScreenImage, setFullScreenImage] = useState(null);
 
   const SELLER_NUMBER = "919491950909"; 
-  const API_URL = "https://bramari.onrender.com";
+  const API_URL = "https://bramari-api.onrender.com";
   
+  const categories = ["All", "Silk", "Cotton", "Georgette", "Wedding", "Party Wear"];
+
   // --- HERO SLIDER ---
   useEffect(() => {
     const timer = setInterval(() => {
@@ -158,7 +151,7 @@ function Shop() {
     <div className="min-h-screen bg-saree-cream flex flex-col font-sans overflow-x-hidden relative">
       <Toaster />
       
-      {/* 1. NEW: TOP ANNOUNCEMENT BAR (Marquee) */}
+      {/* 1. ANNOUNCEMENT BAR (KEPT) */}
       <div className="bg-saree-maroon text-saree-gold text-[10px] md:text-xs font-bold py-1.5 overflow-hidden z-[60] relative">
         <div className="whitespace-nowrap animate-marquee flex gap-10">
           <span>✨ FREE SHIPPING ON ORDERS ABOVE ₹5000</span>
@@ -226,24 +219,16 @@ function Shop() {
 
       <div id="collection" className="flex-grow max-w-7xl mx-auto px-2 md:px-6 py-6 w-full bg-white rounded-t-[30px] -mt-8 relative z-10 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
         
-        {/* 2. NEW: STORY STYLE CATEGORIES (Visual & Attractive) */}
-        <div className="flex gap-4 overflow-x-auto no-scrollbar py-4 px-2 mb-6 border-b border-gray-100 sticky top-20 bg-white/95 backdrop-blur z-30">
-             {storyCategories.map((cat, idx) => (
-                 <div key={idx} onClick={() => setSelectedCategory(cat.name)} className="flex flex-col items-center gap-2 cursor-pointer group flex-shrink-0">
-                     <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full p-[2px] ${selectedCategory === cat.name ? 'bg-gradient-to-tr from-saree-gold to-saree-maroon' : 'bg-gray-200'}`}>
-                         <div className={`w-full h-full rounded-full border-2 border-white ${cat.color} flex items-center justify-center text-white font-bold text-xs md:text-lg shadow-inner group-hover:scale-105 transition`}>
-                             {cat.name.charAt(0)}
-                         </div>
-                     </div>
-                     <span className={`text-[10px] md:text-xs font-bold uppercase tracking-wide ${selectedCategory === cat.name ? 'text-saree-maroon' : 'text-gray-500'}`}>{cat.name}</span>
-                 </div>
-             ))}
-        </div>
-
-        {/* SEARCH & FILTER */}
-        <div className="flex gap-2 mb-6 px-2">
+        {/* FILTERS & SEARCH (Restored to Clean Pills) */}
+        <div className="flex flex-col lg:flex-row gap-4 mb-8 items-center justify-between p-2 sticky top-20 z-30 bg-white/95 backdrop-blur pb-4 border-b border-gray-100">
+          <div className="flex gap-2 overflow-x-auto w-full lg:w-auto no-scrollbar items-center pb-1">
+            {categories.map(cat => (
+              <button key={cat} onClick={() => setSelectedCategory(cat)} className={`px-4 py-1.5 rounded-full text-xs md:text-sm font-bold whitespace-nowrap transition border ${selectedCategory === cat ? "bg-saree-maroon text-white border-saree-maroon" : "bg-gray-50 text-gray-600 border-gray-200 hover:border-saree-maroon"}`}>{cat}</button>
+            ))}
+          </div>
+          <div className="flex gap-2 w-full lg:w-auto">
             <div className="relative w-full">
-              <input type="text" placeholder="Search for sarees..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-saree-maroon text-sm" />
+              <input type="text" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-saree-maroon text-sm" />
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><Icons.Search /></div>
             </div>
             <select value={sortOption} onChange={(e) => setSortOption(e.target.value)} className="p-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-bold text-gray-700 outline-none cursor-pointer">
@@ -251,24 +236,24 @@ function Shop() {
               <option value="lowToHigh">Price: Low-High</option>
               <option value="highToLow">Price: High-Low</option>
             </select>
+          </div>
         </div>
 
-        {/* 3. RESTORED: SECONDARY PROMO BANNER (With Parallax Effect) */}
+        {/* SECONDARY BANNER (Simple & Clean) */}
         <div className="mb-10 mx-2 rounded-2xl overflow-hidden relative h-52 md:h-80 shadow-lg group cursor-pointer">
             <img 
                 src="/banners/promo.jpg" 
                 alt="Promo" 
-                className="w-full h-full object-cover transition duration-1000 group-hover:scale-110 brightness-[0.7]" 
+                className="w-full h-full object-cover transition duration-1000 group-hover:scale-105 brightness-[0.7]" 
                 onError={(e) => { e.target.src = "https://via.placeholder.com/1500x500/4a0404/ffffff?text=Bridal+Collection"; }}
             />
             <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-6 border-white/20 m-3 border rounded-xl">
                 <span className="text-saree-gold font-bold tracking-[0.3em] uppercase text-[10px] md:text-xs mb-2 bg-black/60 px-3 py-1 rounded-full backdrop-blur-md">Exclusive</span>
                 <h3 className="text-3xl md:text-6xl font-serif text-white font-bold mb-4 drop-shadow-lg">The Bridal Edit</h3>
-                <button className="text-white border-b border-saree-gold text-sm md:text-lg hover:text-saree-gold transition">View Collection &rarr;</button>
             </div>
         </div>
 
-        {/* PRODUCTS GRID */}
+        {/* PRODUCTS GRID (2 Cols, Swipeable Images) */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-8 px-2">
           {loading ? [...Array(6)].map((_, i) => <SkeletonCard key={i} />) : filteredProducts.length === 0 ? <div className="col-span-full text-center py-20 text-gray-500">No sarees found.</div> : 
              filteredProducts.map((saree) => (
@@ -278,7 +263,7 @@ function Shop() {
                     {isInWishlist(saree._id) ? <Icons.HeartSolid /> : <Icons.HeartOutline />}
                 </button>
 
-                {/* SWIPEABLE IMAGE */}
+                {/* SWIPEABLE IMAGE CAROUSEL (CSS Only, No Arrows) */}
                 <div className="relative w-full aspect-[3/4] bg-gray-50 overflow-hidden">
                    {saree.images && saree.images.length > 0 ? (
                        <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide w-full h-full">
@@ -297,8 +282,11 @@ function Shop() {
                        </div>
                    ) : <div className="w-full h-full flex items-center justify-center text-gray-300">No Image</div>}
                    
+                   {/* Small pill indicating multiple photos exist */}
                    {saree.images && saree.images.length > 1 && (
-                       <div className="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm pointer-events-none">+{saree.images.length - 1}</div>
+                       <div className="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm pointer-events-none">
+                           +{saree.images.length - 1}
+                       </div>
                    )}
                 </div>
 
@@ -317,11 +305,11 @@ function Shop() {
         </div>
       </div>
 
-      {/* 4. NEW: NEWSLETTER & TRUST SECTION (Trust Signals) */}
+      {/* 2. NEWSLETTER SECTION (KEPT) */}
       <div className="bg-gray-50 py-12 mt-12 border-t border-gray-100">
           <div className="max-w-7xl mx-auto px-6 text-center">
               <h3 className="text-2xl font-serif text-gray-800 mb-4">Join the Bramari Family</h3>
-              <p className="text-gray-500 mb-6 text-sm">Subscribe to receive updates, access to exclusive deals, and more.</p>
+              <p className="text-gray-500 mb-6 text-sm">Subscribe to receive updates and exclusive deals.</p>
               <div className="flex justify-center max-w-md mx-auto gap-2">
                   <input type="email" placeholder="Enter your email" className="w-full p-3 rounded border border-gray-300 text-sm focus:outline-none focus:border-saree-maroon" />
                   <button className="bg-saree-maroon text-white px-6 py-3 rounded text-sm uppercase font-bold hover:bg-opacity-90">Subscribe</button>
@@ -330,7 +318,7 @@ function Shop() {
       </div>
 
       {/* FOOTER */}
-      <footer className="bg-saree-maroon text-white pt-16 pb-24"> {/* Added extra padding bottom for floating button */}
+      <footer className="bg-saree-maroon text-white pt-16 pb-12">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-8 mb-8">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
@@ -349,17 +337,6 @@ function Shop() {
         </div>
         <div className="text-center border-t border-white/10 pt-8 text-xs text-gray-400">© 2025 Bramari Fashion.</div>
       </footer>
-
-      {/* 5. NEW: FLOATING WHATSAPP BUTTON (Crucial for Sales) */}
-      <a 
-        href={`https://wa.me/${SELLER_NUMBER}`} 
-        target="_blank" 
-        rel="noreferrer" 
-        className="fixed bottom-6 right-6 z-40 bg-green-500 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition hover:bg-green-600 animate-bounce-slow"
-        title="Chat on WhatsApp"
-      >
-        <Icons.WhatsApp />
-      </a>
 
       {/* CART SIDEBAR */}
       {isCartOpen && (
